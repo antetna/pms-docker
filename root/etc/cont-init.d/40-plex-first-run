@@ -120,6 +120,23 @@ if [ ! -z "${PLEX_CLAIM}" ] && [ -z "${token}" ]; then
   fi
 fi
 
+
+# Accept EULA
+setPref "AcceptedEULA" "1"
+setPref "GdmEnabled" "0"
+
+# allow remote access
+setPref "PublishServerOnPlexOnlineKey" "1"
+
+# Setup manual port mapping if needed
+if [ ! -z "${EXTERNAL_PORT}" ]; then
+  setPref "ManualPortMappingMode" "1"
+  setPref "ManualPortMappingPort" "${EXTERNAL_PORT}"
+else
+    echo "EXTERNAL_PORT was not provided - not possible to set manual port mapping."
+fi
+
+
 if [ ! -z "${ADVERTISE_IP}" ]; then
   setPref "customConnections" "${ADVERTISE_IP}"
 fi
