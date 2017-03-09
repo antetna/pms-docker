@@ -128,6 +128,12 @@ setPref "AcceptedEULA" "1"
 setPref "GdmEnabled" "0"
 #   - disable DLNA
 setPref "DlnaEnabled" "0"
+#   - disable send usage data to Plex
+setPref "collectUsageData" "0"
+#   - disable debug logging
+setPref "logDebug" "0"
+
+
 
 # allow remote access
 setPref "PublishServerOnPlexOnlineKey" "1"
