@@ -120,10 +120,14 @@ if [ ! -z "${PLEX_CLAIM}" ] && [ -z "${token}" ]; then
   fi
 fi
 
-
-# Accept EULA
+#
+# Tweak settings to have less services loaded, this can be re-enabled from GUI anytime later
+#   - accept EULA
 setPref "AcceptedEULA" "1"
+#   - disable network discovery
 setPref "GdmEnabled" "0"
+#   - disable DLNA
+setPref "DlnaEnabled" "0"
 
 # allow remote access
 setPref "PublishServerOnPlexOnlineKey" "1"
