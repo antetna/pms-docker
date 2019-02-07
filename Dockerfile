@@ -10,9 +10,11 @@ RUN \
 # Update and get dependencies
     apt-get update && \
     apt-get install -y \
+      tzdata \
       curl \
       xmlstarlet \
       uuid-runtime \
+      unrar \
     && \
 
 # Fetch and extract S6 overlay
@@ -43,7 +45,7 @@ VOLUME /config /transcode
 ENV CHANGE_CONFIG_DIR_OWNERSHIP="true" \
     HOME="/config"
 
-ARG TAG=plexpass
+ARG TAG=beta
 ARG URL=
 
 COPY root/ /
@@ -53,4 +55,3 @@ RUN \
     /installBinary.sh
 
 HEALTHCHECK --interval=200s --timeout=100s CMD /healthcheck.sh || exit 1
-

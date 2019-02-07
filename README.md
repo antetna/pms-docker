@@ -53,7 +53,7 @@ plexinc/pms-docker
 Similar to `Host Networking` above with these changes:
 
 - The network has been changed to `physical` which is the name of the `macvlan` network (yours is likely to be different).
-- The `--ip` parameter has been added to specify the IP address of the container.  This parameter is optional since the network may specify IPs to use but this paramater overrides those settings.
+- The `--ip` parameter has been added to specify the IP address of the container.  This parameter is optional since the network may specify IPs to use but this parameter overrides those settings.
 - The `-h <HOSTNAME>` has been added since this networking type doesn't use the hostname of the host.
 
 ### Bridge Networking
@@ -90,16 +90,16 @@ Note: In this configuration, you must do some additional configuration:
 
 - `-p 32400:32400/tcp` Forwards port 32400 from the host to the container.  This is the primary port that Plex uses for communication and is required for Plex Media Server to operate.
 - `-p …` Forwards complete set of other ports used by Plex to the container.  For a full explanation of which you may need, please see the help article: [https://support.plex.tv/hc/en-us/articles/201543147-What-network-ports-do-I-need-to-allow-through-my-firewall](https://support.plex.tv/hc/en-us/articles/201543147-What-network-ports-do-I-need-to-allow-through-my-firewall)
-- `-v <path/to/plex/database>:/config` The path where you wish Plex Media Server to store its configuration data.  This database can grow to be quite large depending on the size of your media collection.  This is usually a few GB but for large libraries or libraries where index files are generated, this can easily hit the 100s of GBs.  If you have an existing database directory see the section below on the directory setup. (Note that the underlying filesystem needs to support file locking. Known to not be default enabled on remote filesystems like NFS)
+- `-v <path/to/plex/database>:/config` The path where you wish Plex Media Server to store its configuration data.  This database can grow to be quite large depending on the size of your media collection.  This is usually a few GB but for large libraries or libraries where index files are generated, this can easily hit the 100s of GBs.  If you have an existing database directory see the section below on the directory setup. **Note**: the underlying filesystem needs to support file locking. This is known to not be default enabled on remote filesystems like NFS, SMB, and many many others.  The 9PFS filesystem used by FreeNAS Corral is known to work but the vast majority will result in database corruption.  Use a network share at your own risk.
 - `-v <path/to/transcode/temp>:/transcode` The path where you would like Plex Media Server to store its transcoder temp files.  If not provided, the storage space within the container will be used.  Expect sizes in the 10s of GB.
 - `-v <path/to/media>:/data` This is provided as examples for providing media into the container.  The exact structure of how the media is organized and presented inside the container is a matter of user preference.  You can use as many or as few of these parameters as required to provide your media to the container.
 - `-e KEY="value"` These are environment variables which configure the container.  See below for a description of their meanings.
 
-The following are the recommended parameters.  Each of the following parameters to the container are treated as first-run parameters only.  That is, all other paraters are ignored on subsequent runs of the server.  We recommend that you set the following parameters:
+The following are the recommended parameters.  Each of the following parameters to the container are treated as first-run parameters only.  That is, all other parameters are ignored on subsequent runs of the server.  We recommend that you set the following parameters:
 
 - **HOSTNAME** Sets the hostname inside the docker container. For example `-h PlexServer` will set the servername to `PlexServer`.  Not needed in Host Networking.
 - **TZ** Set the timezone inside the container.  For example: `Europe/London`.  The complete list can be found here: [https://en.wikipedia.org/wiki/List_of_tz_database_time_zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
-- **PLEX_CLAIM** The claim token for the server to obtain a real server token.  If not provided, server is will not be automatically logged in.  If server is already logged in, this parameter is ignored.  You can obtain a claim token to login your server to your plex account by visiting [https://www.plex.tv/claim](https://www.plex.tv/claim)
+- **PLEX_CLAIM** The claim token for the server to obtain a real server token.  If not provided, server will not be automatically logged in.  If server is already logged in, this parameter is ignored.  You can obtain a claim token to login your server to your plex account by visiting [https://www.plex.tv/claim](https://www.plex.tv/claim)
 - **ADVERTISE_IP** This variable defines the additional IPs on which the server may be be found.  For example: `http://10.1.1.23:32400`.  This adds to the list where the server advertises that it can be found.  This is only needed in Bridge Networking.
 
 These parameters are usually not required but some special setups may benefit from their use.  As in the previous section, each is treated as first-run parameters only:
@@ -125,9 +125,9 @@ uid=1001(myuser) gid=1001(myuser) groups=1001(myuser)
 In the above case, if you set the `PLEX_UID` and `PLEX_GID` to `1001`, then the permissions will match that of your own user.
 
 ## Tags
-In addition to the standard version and `latest` tags, two other tags exist: `plexpass` and `public`. These two images behave differently than your typical containers.  These two images do **not** have any Plex Media Server binary installed.  Instead, when these containers are run, they will perform an update check and fetch the latest version, install it, and then continue execution.  They also run the update check whenever the container is restarted.  To update the version in the container, simply stop the container and start container again when you have a network connection. The startup script will automatically fetch the appropriate version and install it before starting the Plex Media Server.
+In addition to the standard version and `latest` tags, two other tags exist: `beta` and `public`. These two images behave differently than your typical containers.  These two images do **not** have any Plex Media Server binary installed.  Instead, when these containers are run, they will perform an update check and fetch the latest version, install it, and then continue execution.  They also run the update check whenever the container is restarted.  To update the version in the container, simply stop the container and start container again when you have a network connection. The startup script will automatically fetch the appropriate version and install it before starting the Plex Media Server.
 
-The `public` restricts this check to public versions only where as `plexpass` will fetch Plex Pass versions.  If the server is not logged in or you do not have Plex Pass on your account, the `plexpass` tagged images will be restricted to publicly available versions only.
+The `public` restricts this check to public versions only where as `beta` will fetch beta versions.  If the server is not logged in or you do not have Plex Pass on your account, the `beta` tagged images will be restricted to publicly available versions only.
 
 To view the Docker images head over to [https://hub.docker.com/r/plexinc/pms-docker/tags/](https://hub.docker.com/r/plexinc/pms-docker/tags/)
 
@@ -146,7 +146,7 @@ If you wish to migrate an existing directory to the docker config directory:
 
 ## Useful information
 - Start the container: `docker start plex`
-- Stop the conrainer: `docker stop plex`
+- Stop the container: `docker stop plex`
 - Shell access to the container while it is running: `docker exec -it plex /bin/bash`
 - See the logs given by the startup script in real time: `docker logs -f plex`
 - Restart the application and upgrade to the latest version: `docker restart plex`
@@ -159,3 +159,13 @@ plex    | s6-supervise (child): fatal: unable to exec run: Permission denied
 plex    | s6-supervise avahi: warning: unable to spawn ./run - waiting 10 seconds
 ```
 As a workaround you can add `- /run` to volumes in your docker-compose.yml or `-v /run` to the docker create command.
+
+## Windows (Not Recommended)
+
+Docker on Windows works differently than it does on Linux; it uses a VM to run a stripped-down Linux and then runs docker within that.  The volume mounts are exposed to the docker in this VM via SMB mounts.  While this is fine for media, it is unacceptable for the `/config` directory because SMB does not support file locking.  This **will** eventually corrupt your database which can lead to slow behavior and crashes.  If you must run in docker on Windows, you should put the `/config` directory mount inside the VM and not on the Windows host.  It's worth noting that this warning also extends to other containers which use SQLite databases.
+
+## Running on a headless server with container using host networking
+
+If the claim token is not added during initial configuration you will need to use ssh tunneling to gain access and setup the server for first run. During first run you setup the server to make it available and configurable. However, this setup option will only be triggered if you access it over http://localhost:32400/web, it will not be triggered if you access it over http://ip_of_server:32400/web. If you are setting up PMS on a headless server, you can use a SSH tunnel to link http://localhost:32400/web (on your current computer) to http://localhost:32400/web (on the headless server running PMS):
+
+`ssh username@ip_of_server -L 32400:ip_of_server:32400 -N`
