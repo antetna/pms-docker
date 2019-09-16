@@ -134,6 +134,8 @@ setPref "collectUsageData" "0"
 setPref "logDebug" "0"
 
 
+# enable HW transcoding, encode/decode if possible
+setPref "HardwareAcceleratedCodecs" "1"
 
 # allow remote access
 setPref "PublishServerOnPlexOnlineKey" "1"
